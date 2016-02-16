@@ -47,7 +47,7 @@ Links
 
 Another engine.io/socket.io client: `socketIO_client`_
 
-.. _engine.io-client: https://github.com/socket.io/engine.io-client
+.. _engine.io-client: https://github.com/socketio/engine.io-client
 .. _python-engineio: https://github.com/miguelgrinberg/python-engineio
 .. _Miguel Grinberg: https://github.com/miguelgrinberg
 .. _gevent: http://gevent.org/
