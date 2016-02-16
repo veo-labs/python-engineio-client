@@ -20,6 +20,7 @@ Example
 -------
 
 ::
+
     from engineio_client.client import Client
 
     import gevent
@@ -41,7 +42,13 @@ Example
     gevent.wait()
 
 
+Links
+-----
+
+Another engine.io/socket.io client: `socketIO_client`_
+
 .. _engine.io-client: https://github.com/socket.io/engine.io-client
 .. _python-engineio: https://github.com/miguelgrinberg/python-engineio
 .. _Miguel Grinberg: https://github.com/miguelgrinberg
 .. _gevent: http://gevent.org/
+.. _socketIO_client: https://github.com/invisibleroads/socketIO-client
