@@ -34,7 +34,7 @@ class Transport(Emitter):
         self.do_send(packets)
 
     def handle_error(self, error):
-        logger.warning("Transport error")
+        logger.warning("Transport error: %s", error)
         self.emit('error', error)
 
     def handle_open(self):
