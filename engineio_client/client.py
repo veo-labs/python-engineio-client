@@ -120,7 +120,8 @@ class Client(Emitter):
         if self.state in ['opening', 'open', 'closing']:
             logger.debug("Closing client")
             self.state = 'closed'
-            self.transport.close()
+            not_closed_by_transport = (self.state == 'closing')
+            self.transport.close(send=not_closed_by_transport)
             self.sid = None
             self.stop_loop(self.ping_pong_loop)
             self.stop_loop(self.flush_loop)
