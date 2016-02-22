@@ -15,12 +15,13 @@ class Client(Emitter):
         'polling': Polling
     }
 
-    def __init__(self, hostname, port, parser=None, transports=[]):
+    def __init__(self, hostname, port, path='/engine.io', transports=[], parser=None):
         super(Client, self).__init__()
         self.hostname = hostname
         self.port = port
-        self.parser = parser or Parser()
+        self.path = path
         self.transports = [t for t in self.TRANSPORTS.keys() if t in transports] or self.TRANSPORTS.keys()
+        self.parser = parser or Parser()
 
         self.state = 'closed'
         self.sid = None
@@ -52,7 +53,7 @@ class Client(Emitter):
         self.send_packet(Packet(Packet.MESSAGE, message))
 
     def create_transport(self, name):
-        return self.TRANSPORTS[name](self, self.hostname, self.port, self.parser)
+        return self.TRANSPORTS[name](self, self.hostname, self.port, self.path, self.parser)
 
     def set_transport(self, transport):
         if self.transport:

@@ -6,11 +6,12 @@ logger = logging.getLogger(__name__)
 class Transport(Emitter):
     """Abstract base class for transports implementations
     """
-    def __init__(self, client, hostname, port, parser=None):
+    def __init__(self, client, hostname, port, path, parser=None):
         super(Transport, self).__init__()
         self.client = client
         self.hostname = hostname
         self.port = port
+        self.path = path
         self.parser = parser
 
         self.state = 'closed'
