@@ -37,7 +37,7 @@ class Polling(Transport):
             try:
                 payload = self.read()
                 self.handle_payload(payload)
-            except requests.HTTPError as e:
+            except requests.RequestException as e:
                 self.handle_error(e)
 
     def do_open(self):
