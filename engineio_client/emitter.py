@@ -2,11 +2,11 @@ from collections import defaultdict
 
 class Emitter(object):
     def __init__(self):
-        self.handlers = defaultdict(set)
+        self.handlers = defaultdict(list)
 
     def on(self, event, func=None):
         def set_event_handler(handler):
-            self.handlers[event].add(handler)
+            self.handlers[event].append(handler)
             return handler
 
         if func:
@@ -37,5 +37,5 @@ class Emitter(object):
             handler(*args, **kwargs)
 
     def removeAllListeners(self):
-        self.handlers.clear()
+        self.handlers[:] = []
 
