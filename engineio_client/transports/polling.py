@@ -60,7 +60,7 @@ class Polling(Transport):
           payload = self.parser.encode_payload(packets)
           try:
               self.write(payload)
-          except requests.HTTPError as e:
+          except requests.RequestException as e:
               self.handle_error(e)
 
     def handle_pause(self):
