@@ -1,4 +1,5 @@
 from .emitter import Emitter
+from .utils import format_long
 
 import logging
 logger = logging.getLogger(__name__)
@@ -48,7 +49,7 @@ class Transport(Emitter):
         self.emit('close')
 
     def handle_packet(self, packet):
-        logger.debug("Received packet: %s - %s", packet.type_string, repr(packet.data))
+        logger.debug(format_long("Received packet: %s - %s", packet.type_string, repr(packet.data)))
         self.emit('packet', packet)
 
     def do_open(self):

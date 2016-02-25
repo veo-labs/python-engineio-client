@@ -1,5 +1,6 @@
 from ..transport import Transport
 from ..parser import Packet
+from ..utils import format_long
 import requests
 import gevent
 import json
@@ -97,12 +98,12 @@ class Polling(Transport):
 
         r.raise_for_status()
         payload = r.raw.read()
-        logger.debug("Received payload: %s", repr(payload))
+        logger.debug(format_long("Received payload: %s", repr(payload)))
         return payload
 
     def write(self, payload):
         self.writing = True
-        logger.debug("Sending payload: %s", repr(payload))
+        logger.debug(format_long("Sending payload: %s", repr(payload)))
         r = self.session.post(self.get_uri(), stream=True, data=payload)
 
         self.writing = False
