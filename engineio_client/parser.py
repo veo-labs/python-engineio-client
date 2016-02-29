@@ -77,7 +77,7 @@ class Parser(object):
         if packet.binary and b64:
             bytes += base64.b64encode(packet.data).decode('utf-8')
         else:
-            bytes += six.binary_type(packet.data)
+            bytes += packet.data
 
         return bytes
 
@@ -112,7 +112,7 @@ class Parser(object):
             packet_bytes = self.encode_packet(packet, b64)
             packet_len = len(packet_bytes)
             if b64:
-                bytes += str(packet_len) + b':' + packet_bytes
+                bytes += str(packet_len).encode('utf-8') + b':' + packet_bytes
             else:
                 binary_len = b''
                 while packet_len != 0:
