@@ -49,8 +49,8 @@ class Client(Emitter):
         self.send_queue.join()
         self.handle_close()
 
-    def send(self, message):
-        self.send_packet(Packet(Packet.MESSAGE, message))
+    def send(self, message, binary=False):
+        self.send_packet(Packet(Packet.MESSAGE, message, binary))
 
     def create_transport(self, name):
         return self.TRANSPORTS[name](self, self.hostname, self.port, self.path, self.parser)
