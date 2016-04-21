@@ -14,12 +14,16 @@ class Polling(Transport):
     def __init__(self, *args, **kwargs):
         super(Polling, self).__init__(*args, **kwargs)
         self.session = requests.Session()
+        self.session.headers.update({'Content-Type': 'application/octet-stream'})
         self.reading = False
         self.writing = False
         self.read_loop = None
 
     def get_uri(self):
-        query = {}
+        query = {
+            'EIO': '3',
+            'transport': self.name
+        }
         if self.client and self.client.sid:
             query['sid'] = self.client.sid
         querystring = '?' + '&'.join(['='.join(item) for item in query.iteritems()]) if query else ''
