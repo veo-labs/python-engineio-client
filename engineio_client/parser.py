@@ -118,7 +118,8 @@ class Parser(object):
                 while packet_len != 0:
                     binary_len = six.int2byte(packet_len % 10) + binary_len
                     packet_len = int(packet_len / 10)
-                bytes += b'\0' + binary_len + b'\xff' + packet_bytes
+                bytes += b'\x01' if packet.binary else b'\x00'
+                bytes += binary_len + b'\xff' + packet_bytes
 
         return bytes
 
