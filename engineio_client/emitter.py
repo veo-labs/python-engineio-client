@@ -37,5 +37,5 @@ class Emitter(object):
             handler(*args, **kwargs)
 
     def removeAllListeners(self):
-        self.handlers[:] = []
+        self.handlers.clear()
 
