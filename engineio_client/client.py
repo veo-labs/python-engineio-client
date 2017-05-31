@@ -15,8 +15,9 @@ class Client(Emitter):
         'polling': Polling
     }
 
-    def __init__(self, hostname, port, path='/engine.io', transports=[], parser=None):
+    def __init__(self, scheme, hostname, port, path='/engine.io', transports=[], parser=None):
         super(Client, self).__init__()
+        self.scheme = scheme
         self.hostname = hostname
         self.port = port
         self.path = path
@@ -53,7 +54,7 @@ class Client(Emitter):
         self.send_packet(Packet(Packet.MESSAGE, message, binary))
 
     def create_transport(self, name):
-        return self.TRANSPORTS[name](self, self.hostname, self.port, self.path, self.parser)
+        return self.TRANSPORTS[name](self, self.scheme, self.hostname, self.port, self.path, self.parser)
 
     def set_transport(self, transport):
         if self.transport:

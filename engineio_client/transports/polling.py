@@ -28,7 +28,7 @@ class Polling(Transport):
             query['sid'] = self.client.sid
         querystring = '?' + '&'.join(['='.join(item) for item in query.iteritems()]) if query else ''
 
-        return 'http://%s:%d%s/%s' % (self.hostname, self.port, self.path, querystring)
+        return '%s://%s:%d%s/%s' % (self.scheme, self.hostname, self.port, self.path, querystring)
 
     def handle_payload(self, payload):
         packets = self.parser.decode_payload(payload)
