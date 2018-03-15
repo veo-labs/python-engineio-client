@@ -1,6 +1,7 @@
 from .emitter import Emitter
 from .parser import Parser, Packet
 from .transports.polling import Polling
+from .transports.websocket import Websocket
 
 import gevent
 import gevent.event
@@ -10,24 +11,30 @@ import json
 import logging
 logger = logging.getLogger(__name__)
 
+
 class Client(Emitter):
     TRANSPORTS = {
-        'polling': Polling
+        'polling': Polling,
+        'websocket': Websocket
     }
 
-    def __init__(self, scheme, hostname, port, path='/engine.io', transports=[], parser=None):
+    def __init__(self, scheme, hostname, port, path='/engine.io',
+                 transports=[], parser=None):
         super(Client, self).__init__()
         self.scheme = scheme
         self.hostname = hostname
         self.port = port
         self.path = path
-        self.transports = [t for t in self.TRANSPORTS.keys() if t in transports] or self.TRANSPORTS.keys()
+        self.transports = [
+            t for t in self.TRANSPORTS.keys() if t in transports
+        ] or self.TRANSPORTS.keys()
         self.parser = parser or Parser()
 
         self.state = 'closed'
         self.sid = None
         self.ping_interval = None
         self.ping_timeout = None
+        self.upgrades = None
         self.pong_event = gevent.event.Event()
         self.send_queue = gevent.queue.JoinableQueue()
         self.transport = None
@@ -36,9 +43,9 @@ class Client(Emitter):
 
     def open(self):
         self.state = 'opening'
-        transport_name = self.transports[0]
+        transport_name = 'polling'
         transport = self.create_transport(transport_name)
-        
+
         transport.open()
         self.set_transport(transport)
 
@@ -54,13 +61,14 @@ class Client(Emitter):
         self.send_packet(Packet(Packet.MESSAGE, message, binary))
 
     def create_transport(self, name):
-        return self.TRANSPORTS[name](self, self.scheme, self.hostname, self.port, self.path, self.parser)
+        return self.TRANSPORTS[name](self, self.scheme, self.hostname,
+                                     self.port, self.path, self.parser)
 
     def set_transport(self, transport):
         if self.transport:
-            logger.debug("Clearing existing transport")
+            logger.debug('Clearing existing transport')
             self.transport.removeAllListeners()
-    
+
         self.transport = transport
         self.transport.on('close', self.handle_close)
         self.transport.on('packet', self.handle_packet)
@@ -68,15 +76,16 @@ class Client(Emitter):
 
     def send_packet(self, packet):
         if self.state in ['closing', 'closed']:
-            logger.warning("Trying to send a packet while state is: %s", self.state)
+            logger.warning('Trying to send a packet while state is: %s',
+                           self.state)
             return
         self.send_queue.put(packet)
 
     def loop_flush(self):
         while self.state in ['open', 'closing']:
-            logger.debug("Waiting packets")
+            logger.debug('Waiting packets')
             self.send_queue.peek()
-            logger.debug("Flushing packets")
+            logger.debug('Flushing packets')
 
             packets = []
             try:
@@ -100,7 +109,7 @@ class Client(Emitter):
                 self.handle_close()
                 break
             gevent.sleep(self.ping_interval/1000)
-    
+
     def start_loop(self, func, *args, **kwargs):
         def loop_stopped(g):
             logger.debug("Stop %s", func.__name__)
@@ -117,6 +126,29 @@ class Client(Emitter):
         self.state = 'open'
         self.emit('open')
 
+        for upgrade in self.upgrades:
+            self.probe(upgrade)
+
+    def probe(self, upgrade):
+        transport = self.create_transport(upgrade)
+
+        def on_pause():
+            self.set_transport(transport)
+            self.transport.send([Packet(Packet.UPGRADE, '')])
+
+        def on_packet(packet):
+            if packet.type == Packet.PONG and packet.data == 'probe':
+                self.transport.once('pause', on_pause)
+                self.transport.pause()
+
+        def on_transport_open():
+            transport.send([Packet(Packet.PING, 'probe')])
+            transport.once('packet', on_packet)
+
+        transport.once('open', on_transport_open)
+
+        transport.open()
+
     def handle_close(self):
         if self.state in ['opening', 'open', 'closing']:
             logger.debug("Closing client")
@@ -132,6 +164,7 @@ class Client(Emitter):
         self.sid = handshake['sid']
         self.ping_interval = handshake['pingInterval']
         self.ping_timeout = handshake['pingTimeout']
+        self.upgrades = handshake['upgrades']
         self.handle_open()
         self.ping_pong_loop = self.start_loop(self.loop_ping_pong)
         self.flush_loop = self.start_loop(self.loop_flush)
@@ -140,7 +173,7 @@ class Client(Emitter):
         if self.state not in ['open', 'opening']:
             logger.warning("Packet received while state is: %s", self.state)
             return
-    
+
         if packet.type == Packet.OPEN:
             handshake = json.loads(packet.data)
             self.handle_handshake(handshake)

@@ -24,6 +24,7 @@ setup(
         'six>=1.9.0',
         'requests>=2.9.1',
         'gevent>=1.0.2',
+        'websocket-client==0.47.0'
     ],
     classifiers=[
         'Environment :: Web Environment',
