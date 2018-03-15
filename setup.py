@@ -9,7 +9,7 @@ from setuptools import setup
 
 setup(
     name='python-engineio-client',
-    version='0.1',
+    version='0.2',
     url='http://github.com/veo-labs/python-engineio-client/',
     license='MIT',
     author='Frédéric Sureau',
