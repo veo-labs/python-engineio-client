@@ -127,7 +127,8 @@ class Client(Emitter):
         self.emit('open')
 
         for upgrade in self.upgrades:
-            self.probe(upgrade)
+            if upgrade in self.transports:
+                self.probe(upgrade)
 
     def probe(self, upgrade):
         transport = self.create_transport(upgrade)
@@ -190,4 +191,3 @@ class Client(Emitter):
         logger.warning("Error occured: %s", error)
         self.emit('error', error)
         self.handle_close()
-
