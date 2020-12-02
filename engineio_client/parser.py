@@ -93,6 +93,7 @@ class Parser(object):
                     i += 1
                 packet_start = i+1
             else:
+                bytes = bytes.decode('utf-8')
                 i = bytes.find(b':')
                 if i == -1:
                     raise ValueError('Invalid payload')
@@ -122,4 +123,3 @@ class Parser(object):
                 bytes += binary_len + b'\xff' + packet_bytes
 
         return bytes
-
