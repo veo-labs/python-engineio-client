@@ -171,7 +171,7 @@ class Client(Emitter):
         self.flush_loop = self.start_loop(self.loop_flush)
 
     def handle_packet(self, packet):
-        if self.state not in ['open', 'opening']:
+        if self.state not in ['open', 'opening', 'closing']:
             logger.warning("Packet received while state is: %s", self.state)
             return
 
