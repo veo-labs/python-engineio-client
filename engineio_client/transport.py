@@ -23,10 +23,9 @@ class Transport(Emitter):
             self.state = 'opening'
             self.do_open()
 
-    def close(self, send=True):
+    def close(self):
         if self.state in ['open', 'opening']:
-            if send:
-                self.do_close()
+            self.do_close()
             self.handle_close()
 
     def send(self, packets):
@@ -67,4 +66,3 @@ class TransportException(Exception):
 
 class TransportNotOpenException(TransportException):
     pass
-

@@ -153,9 +153,10 @@ class Client(Emitter):
     def handle_close(self):
         if self.state in ['opening', 'open', 'closing']:
             logger.debug("Closing client")
+            self.transport.off('close', self.handle_close)
+            self.transport.close()
+            self.transport.removeAllListeners()
             self.state = 'closed'
-            not_closed_by_transport = (self.state == 'closing')
-            self.transport.close(send=not_closed_by_transport)
             self.sid = None
             self.stop_loop(self.ping_pong_loop)
             self.stop_loop(self.flush_loop)
@@ -179,7 +180,7 @@ class Client(Emitter):
             handshake = json.loads(packet.data)
             self.handle_handshake(handshake)
         elif packet.type == Packet.CLOSE:
-            self.transport.close(send=False)
+            self.transport.handle_close()
         elif packet.type == Packet.PONG:
             self.pong_event.set()
         elif packet.type == Packet.MESSAGE:
