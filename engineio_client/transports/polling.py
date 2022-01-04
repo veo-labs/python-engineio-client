@@ -116,7 +116,7 @@ class Polling(Transport):
     def write(self, payload):
         self.writing = True
         logger.debug(format_long('Sending payload: %s', repr(payload)))
-        r = self.session.post(self.get_uri(), stream=True, data=payload)
+        r = self.session.post(self.get_uri(), data=payload)
 
         self.writing = False
         self.emit('write-done')
