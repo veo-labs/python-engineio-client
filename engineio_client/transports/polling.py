@@ -16,7 +16,8 @@ class Polling(Transport):
         super(Polling, self).__init__(*args, **kwargs)
         self.session = requests.Session()
         self.session.headers.update(
-            {'Content-Type': 'application/octet-stream'}
+            {'Content-Type': 'application/octet-stream',
+             'Connection':   'keep-alive'}
         )
         self.reading = False
         self.writing = False
