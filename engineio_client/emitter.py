@@ -15,7 +15,8 @@ class Emitter(object):
             return set_event_handler
 
     def off(self, event, func):
-        self.handlers[event].remove(func)
+        if func in self.handlers[event]:
+            self.handlers[event].remove(func)
 
     def once(self, event, func=None):
         def set_event_handler(handler):
@@ -38,4 +39,3 @@ class Emitter(object):
 
     def removeAllListeners(self):
         self.handlers.clear()
-
