@@ -154,6 +154,7 @@ class Client(Emitter):
         if self.state in ['opening', 'open', 'closing']:
             logger.debug("Closing client")
             self.transport.off('close', self.handle_close)
+            self.transport.off('error', self.handle_error)
             self.transport.close()
             self.transport.removeAllListeners()
             self.state = 'closed'
